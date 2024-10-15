@@ -58,6 +58,10 @@ export class Preloader extends Scene {
         frameHeight: 128,
       }
     );
+    this.load.spritesheet(EPlayerKey.S1_JUMP, "/player/gangsters_1/Jump.png", {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
   }
 
   create() {

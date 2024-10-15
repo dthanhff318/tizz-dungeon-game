@@ -10,7 +10,7 @@ export class BasicMovement {
   walk({ stop }: { stop?: boolean }) {
     const distance = this.player.direction === "right" ? 50 : -50;
     if (stop) {
-      this.player.setVelocity(0);
+      this.player.setVelocityX(0);
       this.player.anims.stop();
       this.player.anims.play(EAnimation.ANI_IDLE);
       return;
@@ -21,7 +21,7 @@ export class BasicMovement {
     )
       return;
     this.player.anims.play(EAnimation.ANI_WALK);
-    this.player.setVelocity(distance);
+    this.player.setVelocityX(distance);
   }
 
   run() {
@@ -32,7 +32,7 @@ export class BasicMovement {
       return;
     const distance = this.player.direction === "right" ? 120 : -120;
     this.player.anims.play(EAnimation.ANI_RUN);
-    this.player.setVelocity(distance);
+    this.player.setVelocityX(distance);
   }
 
   attack({ stop }: { stop?: boolean }) {
@@ -47,5 +47,15 @@ export class BasicMovement {
     )
       return;
     this.player.anims.play(EAnimation.ANI_ATTACK);
+  }
+
+  jump() {
+    if (
+      this.player.anims.currentAnim &&
+      this.player.anims.currentAnim.key === EAnimation.ANI_JUMP
+    )
+      return;
+    this.player.anims.play(EAnimation.ANI_JUMP);
+    this.player.setVelocityY(-350);
   }
 }

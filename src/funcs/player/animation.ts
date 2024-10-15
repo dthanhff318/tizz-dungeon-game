@@ -42,4 +42,13 @@ export function AnimationPlayer(this: any) {
     repeat: -1,
     frameRate: 15,
   });
+  //  Jump
+  this.anims.create({
+    key: EAnimation.ANI_JUMP,
+    frames: this.anims.generateFrameNumbers(EPlayerKey.S1_JUMP, {
+      start: 0,
+      end: 9,
+    }),
+    frameRate: 12,
+  });
 }
