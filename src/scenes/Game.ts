@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { backgroundUtils } from "../funcs/s1/background";
 import { Player } from "../funcs/player/player";
 import { BasicMovement } from "../funcs/player/basicMovement";
+import { EAnimation } from "../config/key/animation";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -10,11 +11,17 @@ export class Game extends Scene {
   player: Player;
   cursor: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
   basicMovement: BasicMovement;
+  isRightDown: boolean;
+  isLeftDown: boolean;
+  isUpDown: boolean;
+  isDownDown: boolean;
   constructor() {
     super("Game");
   }
 
   create() {
+    this.cursor = this.input.keyboard?.createCursorKeys();
+
     this.camera = this.cameras.main;
 
     const { ground } = backgroundUtils.call(this);
@@ -26,32 +33,105 @@ export class Game extends Scene {
     this.player.setGravityY(500);
 
     this.physics.add.collider(this.player, ground);
-    this.cursor = this.input.keyboard?.createCursorKeys();
     this.basicMovement = new BasicMovement(this.player);
+
+    this.player.on("animationcomplete", (animation: any) => {
+      if (animation.key === EAnimation.ANI_JUMP) {
+        if (!this.cursor?.left.isDown || !this.cursor?.right.isDown) {
+          this.basicMovement.idle();
+        }
+      }
+    });
   }
   update() {
     const isOnGround = this.player.body?.touching.down;
-    if (this.cursor?.right.isDown && this.cursor?.left.isDown) {
-      this.basicMovement.walk({ stop: true });
-    } else if (this.cursor?.left.isDown) {
-      if (this.player.direction !== "left") {
+    if (this.cursor?.left.isDown && this.cursor?.right.isDown) {
+      this.basicMovement.idle();
+      return;
+    }
+    // Go up
+    if (this.cursor?.up.isDown) {
+      // Case: Jump when running
+      if (this.cursor.shift.isDown) {
+        const extraDistanceX = this.player.direction === "right" ? 200 : -200;
+        this.basicMovement.jump({ extraVelocity: extraDistanceX });
+        return;
+      }
+
+      isOnGround && this.basicMovement.jump({});
+      // Case: Go right when jumping
+      if (this.cursor?.right.isDown) {
+        this.updatePlayerDirection("right");
+        this.basicMovement.updateVelocityX(140);
+        return;
+      }
+
+      // Case: Go left when jumping
+      if (this.cursor?.left.isDown) {
+        this.updatePlayerDirection("left");
+        this.basicMovement.updateVelocityX(-140);
+        return;
+      }
+      return;
+    }
+    // Go right
+    if (this.cursor?.right.isDown) {
+      this.updatePlayerDirection("right");
+      // Run
+      if (this.cursor.shift.isDown) {
+        this.basicMovement.run();
+        return;
+      }
+      if (this.cursor?.up.isDown) {
+        this.basicMovement.jump({ extraVelocity: 140 });
+        return;
+      }
+      this.basicMovement.walk({});
+      return;
+    }
+    // Go left
+    if (this.cursor?.left.isDown) {
+      this.updatePlayerDirection("left");
+      // Run
+      if (this.cursor.shift.isDown) {
+        this.basicMovement.run();
+        return;
+      }
+      if (this.cursor?.up.isDown) {
+        this.basicMovement.jump({ extraVelocity: -140 });
+        return;
+      }
+      this.basicMovement.walk({});
+      return;
+    }
+
+    if (this.cursor?.space.isDown) {
+      this.basicMovement.shoot();
+      return;
+    }
+    if (isOnGround) {
+      if (
+        (this.player.anims.isPlaying &&
+          this.player.anims.currentAnim?.key === EAnimation.ANI_IDLE) ||
+        !this.player.anims.isPlaying
+      ) {
+        this.basicMovement.idle();
+      }
+    }
+  }
+
+  updatePlayerDirection(direction: "left" | "right") {
+    if (direction === "left") {
+      if (this.player.direction !== direction) {
         this.player.direction = "left";
         this.player.flipX = true;
-      }
-      this.basicMovement.walk({});
-    } else if (this.cursor?.right.isDown) {
-      if (this.player.direction !== "right") {
-        this.player.direction = "right";
-        this.player.flipX = false;
-      }
-      this.basicMovement.walk({});
-    } else if (this.cursor?.up.isDown) {
-      if (isOnGround) {
-        this.basicMovement.jump();
+        return;
       }
     } else {
-      if (isOnGround) {
-        this.basicMovement.walk({ stop: true });
+      if (this.player.direction !== direction) {
+        this.player.direction = "right";
+        this.player.flipX = false;
+        return;
       }
     }
   }

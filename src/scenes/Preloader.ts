@@ -62,6 +62,10 @@ export class Preloader extends Scene {
       frameWidth: 128,
       frameHeight: 128,
     });
+    this.load.spritesheet(EPlayerKey.S1_SHOOT, "/player/gangsters_1/Shot.png", {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
   }
 
   create() {

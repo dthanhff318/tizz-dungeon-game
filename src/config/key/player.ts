@@ -4,4 +4,5 @@ export enum EPlayerKey {
   S1_RUN = "S1_RUN",
   S1_ATTACK = "S1_ATTACK",
   S1_JUMP = "S1_JUMP",
+  S1_SHOOT = "S1_SHOOT",
 }

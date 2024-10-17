@@ -51,4 +51,13 @@ export function AnimationPlayer(this: any) {
     }),
     frameRate: 12,
   });
+  // Shot
+  this.anims.create({
+    key: EAnimation.ANI_SHOOT,
+    frames: this.anims.generateFrameNumbers(EPlayerKey.S1_SHOOT, {
+      start: 0,
+      end: 3,
+    }),
+    frameRate: 15,
+  });
 }

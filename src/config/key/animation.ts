@@ -4,4 +4,5 @@ export enum EAnimation {
   ANI_RUN = "ANI_RUN",
   ANI_ATTACK = "ANI_ATTACK",
   ANI_JUMP = "ANI_JUMP",
+  ANI_SHOOT = "ANI_SHOOT",
 }
